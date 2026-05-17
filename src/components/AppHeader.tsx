@@ -30,19 +30,6 @@ function AppHeader() {
   return (
     <header className="page-header">
       <div className="page-header-left">
-        <div className="search-input-wrap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="11" cy="11" r="7" /><path d="m20 20-3-3" />
-          </svg>
-          <input
-            type="text"
-            className="search-input"
-            placeholder="Search recipes…"
-            value={searchText}
-            onChange={(e) => updateSearchText(e.target.value)}
-            onFocus={() => setActiveWorkspace("search")}
-          />
-        </div>
         <button
           type="button"
           className="btn btn-primary btn-sm"
