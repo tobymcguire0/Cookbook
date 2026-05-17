@@ -99,8 +99,8 @@ function RecipeDetailWorkspace() {
   };
 
   return (
-    <div className="detail-layout">
-      <div className="detail-topbar">
+    <div className="search-shell">
+      <header className="detail-topbar">
         <div className="detail-topbar-left">
           <button type="button" className="btn btn-ghost btn-sm" onClick={returnToMainView}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
@@ -116,6 +116,7 @@ function RecipeDetailWorkspace() {
             type="button"
             className="btn btn-ghost btn-sm"
             aria-label="Share"
+            title="Share"
             onClick={() => {
               if (navigator.share) {
                 void navigator.share({ title: recipe.title, url: recipe.sourceRef ?? location.href });
@@ -126,13 +127,8 @@ function RecipeDetailWorkspace() {
               <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" />
             </svg>
           </button>
-          <button type="button" className="btn btn-ghost btn-sm" aria-label="More">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="5" r="1" /><circle cx="12" cy="12" r="1" /><circle cx="12" cy="19" r="1" />
-            </svg>
-          </button>
         </div>
-      </div>
+      </header>
 
       <div className={cn("recipe-hero", heroClass)}>
         {recipe.heroImage ? (

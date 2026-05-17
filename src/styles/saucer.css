@@ -311,12 +311,12 @@ ul { list-style: none; }
 /* Recipe grid */
 .recipe-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: var(--sp-5);
   padding: var(--sp-6);
 }
 .recipe-grid.compact {
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
   gap: var(--sp-3);
 }
 .recipe-grid.list {
