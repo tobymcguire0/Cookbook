@@ -4,6 +4,7 @@ import { useAuth } from "react-oidc-context";
 import AppWorkspace from "./components/AppWorkspace";
 import AppSidebar from "./components/AppSidebar";
 import LoginPromptModal from "./components/LoginPromptModal";
+import SaucerLoader from "./components/SaucerLoader";
 import { useAppBootstrap } from "./features/app/useAppBootstrap";
 import { useAppShellViewModel } from "./features/app/useAppShellViewModel";
 import { useAuthStatusStore } from "./features/auth/useAuthStatusStore";
@@ -25,11 +26,7 @@ function AppContent() {
     <div className="app-shell">
       <AppSidebar />
       <AppWorkspace />
-      {loading ? (
-        <div className="fixed inset-0 z-30 grid place-items-center" style={{ background: "rgba(62,43,30,0.35)", backdropFilter: "blur(6px)" }}>
-          <div className="btn btn-primary">Loading local Saucer…</div>
-        </div>
-      ) : null}
+      {loading ? <SaucerLoader variant="overlay" label="Loading local Saucer…" /> : null}
       <LoginPromptModal />
     </div>
   );
@@ -39,11 +36,7 @@ function App() {
   const auth = useRequireAuth();
 
   if (auth.isLoading) {
-    return (
-      <div className="grid min-h-screen place-items-center px-6">
-        <div className="btn btn-secondary">Loading…</div>
-      </div>
-    );
+    return <SaucerLoader variant="splash" label="Signing you in…" />;
   }
 
   if (auth.error) {
