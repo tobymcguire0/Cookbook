@@ -1,4 +1,6 @@
-const BASE_URL = (import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:3001";
+const BASE_URL = import.meta.env.DEV
+  ? ""
+  : ((import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:3001");
 
 // Stable per-device identity sent with every request so the server can attribute
 // mutations and avoid echoing a client's own changes back during sync.

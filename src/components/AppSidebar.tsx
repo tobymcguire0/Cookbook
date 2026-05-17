@@ -29,12 +29,15 @@ function AppSidebar() {
     "#7a5ac4", "#5aa898", "#d4956a",
   ];
   const mealDots = ["#f59e0b", "#10b981", "#3b82f6", "#ef4444", "#a855f7", "#06b6d4"];
-
   return (
     <aside className="sidebar">
       <div className="sidebar-logo">
         <div className="sidebar-logo-mark">
-          <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V22h8v-7.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7z"/></svg>
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 3C8.5 3 5.5 5 4 8H20C18.5 5 15.5 3 12 3Z"/>
+          <path d="M3.5 10C3.2 11.3 3 12 3 13C3 18 7 21 12 21C17 21 21 18 21 13C21 12 20.8 11.3 20.5 10H3.5Z" opacity=".5"/>
+          <path d="M8 14C8 14 9 16 12 16C15 16 16 14 16 14" stroke="white" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+          </svg>
         </div>
         <span className="sidebar-logo-name">Saucer</span>
       </div>
@@ -109,8 +112,8 @@ function AppSidebar() {
 
       <div className="sidebar-footer">
         <button type="button" className="btn-random" onClick={search.chooseRandomRecipe}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 4v5h5"/></svg>
-          What's for dinner?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 3h5v5"/><path d="M4 20l8-8"/><path d="M21 3l-9 9"/><path d="M4 4l5 5"/><path d="M16 16l5 5"/></svg>
+          Random Recipe
         </button>
         <button
           type="button"
