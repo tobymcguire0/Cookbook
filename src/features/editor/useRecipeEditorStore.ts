@@ -217,10 +217,13 @@ export const useRecipeEditorStore = create<RecipeEditorStoreState>((set, get) =>
 
     try {
       const { useSyncStore } = await import("../sync/useSyncStore");
+      const { useAuthStatusStore } = await import("../auth/useAuthStatusStore");
       const { client: syncClient, connected } = useSyncStore.getState();
-      const connectedClient = connected ? syncClient : null;
+      const { isAuthenticated } = useAuthStatusStore.getState();
+      const useServer = connected && isAuthenticated;
+      const connectedClient = useServer ? syncClient : null;
 
-      if (!connected) {
+      if (!useServer) {
         if (!canUseTauri()) {
           set({ uploadErrorActive: true, uploadShakeActive: true, isImporting: false });
           useStatusStore.getState().updateStatus("Connect to the server to import from websites.", "error");
@@ -229,7 +232,10 @@ export const useRecipeEditorStore = create<RecipeEditorStoreState>((set, get) =>
           return;
         }
         set({ uploadErrorActive: true, uploadShakeActive: true });
-        useStatusStore.getState().updateStatus("Server offline — parsing website locally.", "error");
+        const message = !isAuthenticated
+          ? "Parsing website locally. Log in for better parsing accuracy."
+          : "Server offline — parsing website locally.";
+        useStatusStore.getState().updateStatus(message, "error");
         setTimeout(() => useRecipeEditorStore.setState({ uploadShakeActive: false }), 600);
         await new Promise((resolve) => setTimeout(resolve, 5000));
       }

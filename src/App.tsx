@@ -1,7 +1,12 @@
+import { useEffect } from "react";
+import { useAuth } from "react-oidc-context";
+
 import AppWorkspace from "./components/AppWorkspace";
 import AppSidebar from "./components/AppSidebar";
+import LoginPromptModal from "./components/LoginPromptModal";
 import { useAppBootstrap } from "./features/app/useAppBootstrap";
 import { useAppShellViewModel } from "./features/app/useAppShellViewModel";
+import { useAuthStatusStore } from "./features/auth/useAuthStatusStore";
 import { useRequireAuth } from "./features/auth/useRequireAuth";
 import { useSyncEffect } from "./features/sync/useSyncEffect";
 import { usePreferencesEffect } from "./features/preferences/usePreferencesEffect";
@@ -10,6 +15,10 @@ function AppContent() {
   useAppBootstrap();
   useSyncEffect();
   usePreferencesEffect();
+  const auth = useAuth();
+  useEffect(() => {
+    useAuthStatusStore.getState().setIsAuthenticated(auth.isAuthenticated);
+  }, [auth.isAuthenticated]);
   const { loading } = useAppShellViewModel();
 
   return (
@@ -21,6 +30,7 @@ function AppContent() {
           <div className="btn btn-primary">Loading local Saucer…</div>
         </div>
       ) : null}
+      <LoginPromptModal />
     </div>
   );
 }
@@ -53,15 +63,7 @@ function App() {
     );
   }
 
-  if (auth.isAuthenticated) {
-    return <AppContent />;
-  }
-
-  return (
-    <div className="grid min-h-screen place-items-center px-6">
-      <div className="btn btn-secondary">Redirecting to sign in…</div>
-    </div>
-  );
+  return <AppContent />;
 }
 
 export default App;

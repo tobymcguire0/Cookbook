@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState } from "react";
+import { useAuth } from "react-oidc-context";
 
 import type { SourceType } from "../../lib/models";
 import {
@@ -53,6 +54,7 @@ function EditorWorkspace() {
   const taxonomy = useSaucerStore((s) => s.taxonomy);
   const allRecipes = useSaucerStore((s) => s.recipes);
   const connected = useSyncStore((s) => s.connected);
+  const auth = useAuth();
 
   const [activeTab, setActiveTab] = useState<ImportTab>(() => sourceTypeToTab(draft.sourceType));
   const [pasteText, setPasteText] = useState("");
@@ -217,6 +219,30 @@ function EditorWorkspace() {
               {isImporting ? "Fetching…" : "Fetch Recipe"}
             </button>
           </div>
+          {!auth.isAuthenticated ? (
+            <div
+              className="text-sm text-muted"
+              style={{ marginTop: "var(--sp-2)", display: "flex", alignItems: "center", gap: "var(--sp-1)" }}
+            >
+              <span>Using local parser.</span>
+              <button
+                type="button"
+                onClick={() => void auth.signinRedirect()}
+                style={{
+                  background: "none",
+                  border: "none",
+                  padding: 0,
+                  color: "var(--accent)",
+                  cursor: "pointer",
+                  textDecoration: "underline",
+                  font: "inherit",
+                }}
+              >
+                Log in
+              </button>
+              <span>for better parsing accuracy.</span>
+            </div>
+          ) : null}
           {isMultiDraft ? (
             <div className="multi-recipe-banner" style={{ marginTop: "var(--sp-4)" }}>
               <span>{parsedDrafts.length} recipes parsed from this page</span>
@@ -247,49 +273,71 @@ function EditorWorkspace() {
       ) : null}
 
       {activeTab === "photo" ? (
-        <div
-          className="photo-drop-zone"
-          onClick={() => photoInputRef.current?.click()}
-          role="button"
-          tabIndex={0}
-        >
-          <div style={{ fontSize: "2rem" }}>📷</div>
-          <div className="text-base font-semi">Drop a photo or click to upload</div>
-          <div className="text-sm text-muted">PNG, JPG up to 10MB</div>
-          <input
-            ref={photoInputRef}
-            type="file"
-            accept="image/*"
-            hidden
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              void importFromFile(file ?? undefined);
-              e.target.value = "";
-            }}
-          />
-        </div>
+        !auth.isAuthenticated ? (
+          <div className="empty-state">
+            <div className="empty-icon">🔒</div>
+            <div className="empty-title">Log in to import photos</div>
+            <div className="empty-desc">Photo extraction uses the Saucer cloud service.</div>
+            <button type="button" className="btn btn-primary" onClick={() => void auth.signinRedirect()}>
+              Log in
+            </button>
+          </div>
+        ) : (
+          <div
+            className="photo-drop-zone"
+            onClick={() => photoInputRef.current?.click()}
+            role="button"
+            tabIndex={0}
+          >
+            <div style={{ fontSize: "2rem" }}>📷</div>
+            <div className="text-base font-semi">Drop a photo or click to upload</div>
+            <div className="text-sm text-muted">PNG, JPG up to 10MB</div>
+            <input
+              ref={photoInputRef}
+              type="file"
+              accept="image/*"
+              hidden
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                void importFromFile(file ?? undefined);
+                e.target.value = "";
+              }}
+            />
+          </div>
+        )
       ) : null}
 
       {activeTab === "paste" ? (
-        <div className="url-import-area">
-          <textarea
-            className="form-textarea"
-            rows={6}
-            placeholder="Paste recipe text here…"
-            value={pasteText}
-            onChange={(e) => setPasteText(e.target.value)}
-          />
-          <div style={{ marginTop: "var(--sp-3)", display: "flex", justifyContent: "flex-end" }}>
-            <button
-              type="button"
-              className="btn btn-primary"
-              disabled={isImporting || !pasteText.trim()}
-              onClick={() => void importFromText(pasteText)}
-            >
-              {isImporting ? "Parsing…" : "Parse Recipe"}
+        !auth.isAuthenticated ? (
+          <div className="empty-state">
+            <div className="empty-icon">🔒</div>
+            <div className="empty-title">Log in to parse pasted text</div>
+            <div className="empty-desc">Raw text extraction uses the Saucer cloud service.</div>
+            <button type="button" className="btn btn-primary" onClick={() => void auth.signinRedirect()}>
+              Log in
             </button>
           </div>
-        </div>
+        ) : (
+          <div className="url-import-area">
+            <textarea
+              className="form-textarea"
+              rows={6}
+              placeholder="Paste recipe text here…"
+              value={pasteText}
+              onChange={(e) => setPasteText(e.target.value)}
+            />
+            <div style={{ marginTop: "var(--sp-3)", display: "flex", justifyContent: "flex-end" }}>
+              <button
+                type="button"
+                className="btn btn-primary"
+                disabled={isImporting || !pasteText.trim()}
+                onClick={() => void importFromText(pasteText)}
+              >
+                {isImporting ? "Parsing…" : "Parse Recipe"}
+              </button>
+            </div>
+          </div>
+        )
       ) : null}
       {isImporting ? (
             <div className="importing-indicator" role="status" aria-live="polite" aria-label="Importing recipe">

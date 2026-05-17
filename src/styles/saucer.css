@@ -316,7 +316,7 @@ ul { list-style: none; }
   padding: var(--sp-6);
 }
 .recipe-grid.compact {
-  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: var(--sp-3);
 }
 .recipe-grid.list {

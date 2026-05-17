@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAuth } from "react-oidc-context";
 import { useShallow } from "zustand/react/shallow";
 
 import RecipeCard from "../RecipeCard";
@@ -13,6 +14,7 @@ import type { RecipeSort } from "../../lib/models";
 const MEAL_TAG_NAMES = ["Breakfast", "Lunch", "Dinner", "Dessert", "Snack"];
 
 function BrowseWorkspace() {
+  const auth = useAuth();
   const [view, setView] = useState<"grid" | "list">("grid");
   const compact = usePreferencesStore((s) => s.compactCards);
 
@@ -39,6 +41,30 @@ function BrowseWorkspace() {
 
   return (
     <>
+      {!auth.isAuthenticated ? (
+        <div
+          style={{
+            background: "var(--surface)",
+            border: "1.5px solid var(--border)",
+            borderRadius: "var(--r-md)",
+            padding: "var(--sp-3) var(--sp-4)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "var(--sp-3)",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--sp-2)" }}>
+            <span aria-hidden="true">🔑</span>
+            <span className="text-sm">
+              Log in to sync recipes across devices and access more importing options.
+            </span>
+          </div>
+          <button type="button" className="btn btn-primary btn-sm" onClick={() => void auth.signinRedirect()}>
+            Log in
+          </button>
+        </div>
+      ) : null}
       <div className="filter-bar">
         <button
           type="button"
