@@ -8,14 +8,13 @@ import { cloudflare } from "@cloudflare/vite-plugin";
 const host = process.env.TAURI_DEV_HOST;
 
 // https://vite.dev/config/
-export default defineConfig(async ({ mode }) => {
+export default defineConfig(({ mode }) => {
   // @ts-expect-error process is a nodejs global
-  plugins: [react(), tailwindcss(), cloudflare()],
   const env = loadEnv(mode, process.cwd(), "");
   const apiTarget = env.VITE_API_URL ?? "http://localhost:3001";
 
   return {
-    plugins: [react(), tailwindcss()],
+    plugins: [react(), tailwindcss(), cloudflare()],
 
     // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
     //
@@ -47,5 +46,5 @@ export default defineConfig(async ({ mode }) => {
         },
       },
     },
-  },
-}));
+  };
+});
