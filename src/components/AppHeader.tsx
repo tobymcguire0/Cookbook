@@ -16,8 +16,6 @@ function initialsOf(name?: string): string {
 function AppHeader() {
   const auth = useAuth();
   const openLoginPrompt = useLoginPromptStore((s) => s.openPrompt);
-  const searchText = useBrowseStore((s) => s.query.searchText);
-  const updateSearchText = useBrowseStore((s) => s.updateSearchText);
   const setActiveWorkspace = useBrowseStore((s) => s.setActiveWorkspace);
   const { openCreateEditor } = useRecipeEditorActions();
 
