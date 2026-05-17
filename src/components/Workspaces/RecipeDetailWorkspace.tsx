@@ -249,7 +249,7 @@ function RecipeDetailWorkspace() {
 
       {linkedRecipes.length > 0 ? (
         <section className="related-section">
-          <h3>You might also like</h3>
+          <h3>Related Recipes</h3>
           <div className="related-grid">
             {linkedRecipes.map((linked) => (
               <button
