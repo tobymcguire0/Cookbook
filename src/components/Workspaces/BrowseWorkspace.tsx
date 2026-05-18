@@ -11,33 +11,34 @@ import { usePreferencesStore } from "../../features/preferences/usePreferencesSt
 import { cn } from "../../lib/cn";
 import type { RecipeSort } from "../../lib/models";
 
-const MEAL_TAG_NAMES = ["Breakfast", "Lunch", "Dinner", "Dessert", "Snack"];
-
 function BrowseWorkspace() {
   const auth = useAuth();
   const [view, setView] = useState<"grid" | "list">("grid");
   const compact = usePreferencesStore((s) => s.compactCards);
 
-  const { visibleRecipes, deleteRecipe, updateRecipeRating, openEditEditor, openRecipeDetail, tagLookup } =
-    useBrowseWorkspaceViewModel();
+  const {
+    visibleRecipes,
+    groupedRecipes,
+    groupByCategoryId,
+    deleteRecipe,
+    updateRecipeRating,
+    openEditEditor,
+    openRecipeDetail,
+    tagLookup,
+  } = useBrowseWorkspaceViewModel();
 
   const { taxonomy } = useTaxonomyViewModel();
   const { openCreateEditor } = useRecipeEditorActions();
-  const { query, toggleFilterTag, setMinRating, updateSortBy } = useBrowseStore(
+  const { sortBy, updateSortBy, updateGroupByCategory } = useBrowseStore(
     useShallow((s) => ({
-      query: s.query,
-      toggleFilterTag: s.toggleFilterTag,
-      setMinRating: s.setMinRating,
+      sortBy: s.query.sortBy,
       updateSortBy: s.updateSortBy,
+      updateGroupByCategory: s.updateGroupByCategory,
     })),
   );
 
-  const mealTags = MEAL_TAG_NAMES.map((name) =>
-    taxonomy.tags.find((t) => t.name === name),
-  ).filter((t): t is NonNullable<typeof t> => Boolean(t));
-
-  const allActive = query.selectedTagIds.length === 0;
-  const isTopRated = query.minRating === 4;
+  const isGrouped = Boolean(groupByCategoryId) && groupedRecipes.length > 0;
+  const gridClass = cn("recipe-grid", view === "list" && "list", compact && view === "grid" && "compact");
 
   return (
     <>
@@ -66,39 +67,26 @@ function BrowseWorkspace() {
         </div>
       ) : null}
       <div className="filter-bar">
-        <button
-          type="button"
-          className={cn("filter-chip", allActive && "active")}
-          onClick={() => {
-            useBrowseStore.getState().setSelectedTagIds([]);
-          }}
-        >
-          All
-        </button>
-        {mealTags.map((tag) => (
-          <button
-            key={tag.id}
-            type="button"
-            className={cn("filter-chip", query.selectedTagIds.includes(tag.id) && "active")}
-            onClick={() => toggleFilterTag(tag.id)}
+        <label className="group-by-control">
+          <span className="group-by-label">Group by</span>
+          <select
+            className="sort-select"
+            value={groupByCategoryId}
+            onChange={(e) => updateGroupByCategory(e.target.value)}
           >
-            {tag.name}
-          </button>
-        ))}
-        <span style={{ width: 1, height: 24, background: "var(--border)", margin: "0 var(--sp-2)" }} />
-        <button
-          type="button"
-          className={cn("filter-chip", isTopRated && "active")}
-          onClick={() => setMinRating(isTopRated ? undefined : 4)}
-        >
-          <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9 12 2"/></svg>
-          Top Rated
-        </button>
+            <option value="">None</option>
+            {taxonomy.categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+        </label>
 
         <div className="sort-menu">
           <select
             className="sort-select"
-            value={query.sortBy}
+            value={sortBy}
             onChange={(e) => updateSortBy(e.target.value as RecipeSort)}
           >
             <option value="updated">Recently added</option>
@@ -137,8 +125,32 @@ function BrowseWorkspace() {
               Import recipe
             </button>
           </div>
+        ) : isGrouped ? (
+          <div className="grouped-recipes">
+            {groupedRecipes.map((section) => (
+              <section key={section.id} className="grouped-recipe-section">
+                <h2 className="grouped-recipe-heading">
+                  {section.label}
+                  <span className="grouped-recipe-count">{section.recipes.length}</span>
+                </h2>
+                <div className={gridClass}>
+                  {section.recipes.map((recipe) => (
+                    <RecipeCard
+                      key={recipe.id}
+                      recipe={recipe}
+                      tagLookup={tagLookup}
+                      onEdit={openEditEditor}
+                      onDelete={deleteRecipe}
+                      onOpenDetail={openRecipeDetail}
+                      onRate={updateRecipeRating}
+                    />
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
         ) : (
-          <div className={cn("recipe-grid", view === "list" && "list", compact && view === "grid" && "compact")}>
+          <div className={gridClass}>
             {visibleRecipes.map((recipe) => (
               <RecipeCard
                 key={recipe.id}

@@ -4,35 +4,23 @@ import { useShallow } from "zustand/react/shallow";
 import { useBrowseStore } from "../features/browse/useBrowseStore";
 import { useLoginPromptStore } from "../features/auth/useLoginPromptStore";
 import { useRecipeEditorActions } from "../features/editor/useRecipeEditorViewModel";
-import { useTaxonomyViewModel } from "../features/taxonomy/useTaxonomyViewModel";
 import { useSearchViewModel } from "../features/browse/useSearchViewModel";
 import { cn } from "../lib/cn";
+import FilterPanel from "./FilterPanel";
 
 function AppSidebar() {
   const auth = useAuth();
   const openLoginPrompt = useLoginPromptStore((s) => s.openPrompt);
-  const { activeView, setActiveWorkspace, toggleFilterTag, selectedTagIds } = useBrowseStore(
+  const { activeView, setActiveWorkspace } = useBrowseStore(
     useShallow((s) => ({
       activeView: s.activeView,
       setActiveWorkspace: s.setActiveWorkspace,
-      toggleFilterTag: s.toggleFilterTag,
-      selectedTagIds: s.query.selectedTagIds,
     })),
   );
 
   const search = useSearchViewModel();
   const { openCreateEditor } = useRecipeEditorActions();
-  const { taxonomyGroups } = useTaxonomyViewModel();
 
-  const cuisineGroup = taxonomyGroups.find((g) => g.category.name === "Cuisine");
-  const mealGroup = taxonomyGroups.find((g) => g.category.name === "Meal-Time");
-
-  const cuisineDots = [
-    "#c4956a", "#e8835a", "#5a9e52", "#c46028",
-    "#c87c20", "#d4a020", "#5a7ed4", "#c44848",
-    "#7a5ac4", "#5aa898", "#d4956a",
-  ];
-  const mealDots = ["#f59e0b", "#10b981", "#3b82f6", "#ef4444", "#a855f7", "#06b6d4"];
   return (
     <aside className="sidebar">
       <div className="sidebar-logo">
@@ -76,43 +64,10 @@ function AppSidebar() {
         </div>
       </nav>
 
-      {cuisineGroup && cuisineGroup.tags.length > 0 ? (
-        <div className="sidebar-section">
-          <div className="sidebar-section-label">Cuisine</div>
-          <div className="sidebar-tag-list">
-            {cuisineGroup.tags.slice(0, 11).map((tag, idx) => (
-              <button
-                key={tag.id}
-                type="button"
-                className={cn("sidebar-tag-item", selectedTagIds.includes(tag.id) && "active")}
-                onClick={() => toggleFilterTag(tag.id)}
-              >
-                <span className="sidebar-tag-dot" style={{ background: cuisineDots[idx % cuisineDots.length] }} />
-                {tag.name}
-              </button>
-            ))}
-          </div>
-        </div>
-      ) : null}
-
-      {mealGroup && mealGroup.tags.length > 0 ? (
-        <div className="sidebar-section">
-          <div className="sidebar-section-label">Meal Type</div>
-          <div className="sidebar-tag-list">
-            {mealGroup.tags.map((tag, idx) => (
-              <button
-                key={tag.id}
-                type="button"
-                className={cn("sidebar-tag-item", selectedTagIds.includes(tag.id) && "active")}
-                onClick={() => toggleFilterTag(tag.id)}
-              >
-                <span className="sidebar-tag-dot" style={{ background: mealDots[idx % mealDots.length] }} />
-                {tag.name}
-              </button>
-            ))}
-          </div>
-        </div>
-      ) : null}
+      <div className="sidebar-section sidebar-section-filters">
+        <div className="sidebar-section-label">Filters</div>
+        <FilterPanel />
+      </div>
 
       <div className="sidebar-footer">
         <button type="button" className="btn-random" onClick={search.chooseRandomRecipe}>

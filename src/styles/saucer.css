@@ -114,7 +114,7 @@ ul { list-style: none; }
   position: fixed;
   top: 0; left: 0;
   height: 100dvh;
-  overflow-y: auto;
+  overflow: hidden;
   z-index: 50;
   transition: transform 0.28s var(--ease);
 }
@@ -1101,6 +1101,19 @@ ul { list-style: none; }
   font-size: 0.8125rem; font-weight: 700;
   text-transform: uppercase; letter-spacing: 0.07em;
   color: var(--muted);
+  display: inline-flex; align-items: center; gap: var(--sp-2);
+}
+.filter-group-count {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 18px; height: 18px;
+  padding: 0 6px;
+  border-radius: 9px;
+  background: var(--accent);
+  color: var(--surface);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
 }
 .filter-group-toggle { width: 20px; height: 20px; color: var(--muted); transition: transform 0.15s ease; }
 .filter-group.collapsed .filter-group-toggle { transform: rotate(-90deg); }
@@ -1503,4 +1516,41 @@ ul { list-style: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .saucer-loader-dot { animation: none; opacity: 0.6; }
+}
+
+/* Sidebar filter panel (shared filter UI) */
+.sidebar-section-filters { padding: var(--sp-2) 0 var(--sp-4); flex: 1; min-height: 0; overflow-y: auto; }
+.sidebar-section-filters .sidebar-section-label { padding: 0 var(--sp-5); }
+.sidebar-filter-panel { display: flex; flex-direction: column; min-height: 100%; }
+.sidebar-filter-panel .filter-group { padding: var(--sp-3) var(--sp-5); }
+.sidebar-filter-panel .filter-group:last-child { border-bottom: none; }
+.sidebar-filter-panel .filter-group-header:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--r-sm);
+}
+
+/* Browse: group-by selector */
+.group-by-control { display: inline-flex; align-items: center; gap: var(--sp-2); }
+.group-by-label {
+  font-size: 0.8125rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+/* Browse: grouped sections */
+.grouped-recipes { display: flex; flex-direction: column; gap: var(--sp-6); }
+.grouped-recipe-section { display: flex; flex-direction: column; gap: var(--sp-3); }
+.grouped-recipe-heading {
+  display: flex; align-items: baseline; gap: var(--sp-2);
+  font-size: 1.125rem; font-weight: 700;
+  color: var(--fg);
+  margin: 0;
+  padding-top: var(--sp-4);
+  padding-bottom: var(--sp-2);
+  padding-left: var(--sp-6);
+  border-bottom: 1px solid var(--border);
+}
+.grouped-recipe-count {
+  font-size: 0.8125rem; font-weight: 500;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
 }
